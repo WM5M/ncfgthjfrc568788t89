@@ -10,21 +10,13 @@
  */
 
 function corsHeaders(origin, allowOrigin) {
-  // ALLOW_ORIGIN can be "*", a single origin, or comma-separated list
-  const raw = (allowOrigin || "*").trim();
-  let acao = "*";
-  if (raw !== "*") {
-    const list = raw.split(",").map(s => s.trim()).filter(Boolean);
-    if (origin && list.includes(origin)) acao = origin;
-    else if (list.length === 1) acao = list[0];
-    else acao = list[0] || "*";
-  }
+  const allowed = allowOrigin || "*";
+  const acao = allowed === "*" ? "*" : (origin === allowed ? allowed : allowed);
   return {
     "Access-Control-Allow-Origin": acao,
     "Access-Control-Allow-Methods": "POST, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type",
     "Content-Type": "application/json",
-    "Vary": "Origin",
   };
 }
 
