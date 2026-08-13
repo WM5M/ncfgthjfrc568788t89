@@ -6,7 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#0a0c12">
-<title>TriggerFinder PRO</title>
+<title>TriggerFinder Mobile PRO</title>
 <style>
   :root {
     --bg: #0a0c12;
@@ -289,7 +289,7 @@
     </div>
     <div class="brand">
       <h1>TriggerFinder</h1>
-      <div class="pro">PRO</div>
+      <div class="mbolie pro"> Mobile PRO</div>
       <div class="sub">FiveM Advanced Scanner · Mobile</div>
     </div>
     <div class="card">
@@ -313,7 +313,7 @@
     <div class="topbar">
       <div class="topbar-brand">
         <img id="top-logo" style="display:none" alt="">
-        <span>Trigger<span class="finder">Finder</span> <small style="color:var(--text3);font-weight:500">PRO</small></span>
+        <span>Trigger<span class="finder">Finder Mobile</span> <small style="color:var(--text3);font-weight:500">PRO</small></span>
       </div>
       <div class="topbar-user" id="user-badge">user</div>
     </div>
@@ -527,7 +527,7 @@ let modalPayload = "";
 /* ── AUTH ── */
 async function fetchJSON(url){
   try {
-    const r = await fetch(url, { cache: "no-store", headers: { "User-Agent": "TriggerFinderPRO-Mobile/4.0" } });
+    const r = await fetch(url, { cache: "no-store", headers: { "User-Agent": "TriggerFinderPRO-Mobile" } });
     if (!r.ok) return null;
     return await r.json();
   } catch { return null; }
