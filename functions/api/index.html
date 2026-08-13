@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0a0c12">
+<title>TriggerFinder PRO</title>
+<style>
+  :root {
+    --bg: #0a0c12;
+    --bg2: #10131b;
+    --bg3: #181c27;
+    --bg4: #1e2233;
+    --border: #2a2e40;
+    --border2: #3a3e54;
+    --text: #e8eaf0;
+    --text2: #8b8fa8;
+    --text3: #4a4e62;
+    --accent: #3b82f6;
+    --accent2: #1d4ed8;
+    --green: #22c55e;
+    --amber: #f59e0b;
+    --red: #ef4444;
+    --purple: #a78bfa;
+    --prem: #f97316;
+    --gold: #fbbf24;
+    --safe: env(safe-area-inset-bottom, 0px);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    overflow: hidden;
+  }
+  #app { height: 100%; display: flex; flex-direction: column; }
+
+  /* ── LOGIN ── */
+  #login-screen {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px 20px calc(24px + var(--safe));
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .logo-wrap {
+    width: 140px; height: 140px;
+    margin: 12px 0 16px;
+    border-radius: 18px;
+    overflow: hidden;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .logo-wrap img { width: 100%; height: 100%; object-fit: contain; }
+  .logo-fallback {
+    font-size: 48px; color: var(--accent);
+  }
+  .brand { text-align: center; margin-bottom: 8px; }
+  .brand h1 { font-size: 22px; font-weight: 700; }
+  .brand .pro { color: var(--red); font-size: 12px; font-weight: 700; letter-spacing: 1px; }
+  .brand .sub { color: var(--text3); font-size: 12px; margin-top: 4px; }
+
+  .card {
+    width: 100%; max-width: 380px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 22px 20px;
+    margin-top: 16px;
+  }
+  .card h2 { font-size: 15px; text-align: center; margin-bottom: 6px; }
+  .status {
+    text-align: center; font-size: 12px; color: var(--text3);
+    min-height: 18px; margin-bottom: 10px;
+  }
+  .status.err { color: var(--red); }
+  .status.ok { color: var(--green); }
+
+  label {
+    display: block; font-size: 12px; font-weight: 600;
+    color: var(--text2); margin-bottom: 6px;
+  }
+  input[type="text"], input[type="password"], textarea {
+    width: 100%;
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    border-radius: 10px;
+    color: var(--text);
+    font-size: 15px;
+    padding: 12px 14px;
+    outline: none;
+    margin-bottom: 14px;
+  }
+  input:focus, textarea:focus { border-color: var(--accent); }
+  .row-check {
+    display: flex; align-items: center; gap: 8px;
+    margin: -6px 0 14px; font-size: 13px; color: var(--text2);
+  }
+  .row-check input { width: auto; margin: 0; accent-color: var(--accent); }
+
+  .btn {
+    width: 100%;
+    border: none; border-radius: 10px;
+    font-size: 15px; font-weight: 700;
+    padding: 14px;
+    cursor: pointer;
+    transition: background .15s, opacity .15s;
+  }
+  .btn:active { opacity: .85; }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:disabled { background: var(--bg4); color: var(--text3); }
+  .btn-ghost {
+    background: transparent; color: var(--text2);
+    border: 1px solid var(--border); margin-top: 10px;
+  }
+
+  /* ── MAIN ── */
+  #main-screen { display: none; flex: 1; flex-direction: column; overflow: hidden; }
+  .topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 14px;
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .topbar-brand { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 15px; }
+  .topbar-brand img { width: 28px; height: 28px; border-radius: 6px; }
+  .topbar-brand .finder { color: var(--red); }
+  .topbar-user {
+    font-size: 12px; color: var(--text2);
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 20px; padding: 6px 12px;
+  }
+
+  .stats {
+    display: flex; gap: 8px; padding: 10px 12px;
+    overflow-x: auto; flex-shrink: 0;
+    background: var(--bg);
+  }
+  .stat {
+    flex: 0 0 auto;
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 10px; padding: 8px 12px; text-align: center; min-width: 64px;
+  }
+  .stat b { display: block; font-size: 16px; }
+  .stat span { font-size: 10px; color: var(--text3); }
+
+  .tabs {
+    display: flex; gap: 6px; padding: 0 12px 10px;
+    overflow-x: auto; flex-shrink: 0;
+  }
+  .tab {
+    flex: 0 0 auto;
+    background: var(--bg3); color: var(--text2);
+    border: none; border-radius: 20px;
+    padding: 8px 14px; font-size: 12px; font-weight: 600;
+  }
+  .tab.active { background: var(--accent); color: #fff; }
+
+  .content {
+    flex: 1; overflow-y: auto;
+    padding: 0 12px calc(80px + var(--safe));
+  }
+
+  /* upload / paste */
+  .panel {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 14px; padding: 16px; margin-bottom: 12px;
+  }
+  .panel h3 { font-size: 14px; margin-bottom: 10px; }
+  textarea {
+    min-height: 140px; font-family: ui-monospace, Consolas, monospace;
+    font-size: 12px; resize: vertical; margin-bottom: 10px;
+  }
+  .file-btn {
+    display: block; text-align: center;
+    background: var(--bg3); border: 1px dashed var(--border2);
+    border-radius: 10px; padding: 16px; color: var(--text2);
+    font-size: 13px; margin-bottom: 10px; cursor: pointer;
+  }
+  .file-btn input { display: none; }
+
+  /* results */
+  .search {
+    width: 100%; margin-bottom: 10px;
+  }
+  .result {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px;
+    margin-bottom: 8px;
+  }
+  .result.premium { background: #1a1510; border-color: #5a3a10; }
+  .result-top {
+    display: flex; align-items: center; gap: 8px; margin-bottom: 6px; flex-wrap: wrap;
+  }
+  .badge {
+    font-size: 10px; font-weight: 700;
+    border-radius: 6px; padding: 3px 8px;
+    border: 1px solid;
+  }
+  .badge.high { color: var(--red); border-color: var(--red); }
+  .badge.medium { color: var(--amber); border-color: var(--amber); }
+  .badge.low { color: var(--text3); border-color: var(--text3); }
+  .badge.item { color: var(--purple); border-color: var(--purple); }
+  .badge.money { color: var(--green); border-color: var(--green); }
+  .res-meta { font-size: 11px; color: var(--text2); }
+  .res-name {
+    font-family: ui-monospace, Consolas, monospace;
+    font-size: 13px; word-break: break-all;
+    margin: 4px 0 8px;
+  }
+  .res-name.premium { color: #fbbf6b; }
+  .res-actions { display: flex; gap: 8px; }
+  .res-actions button {
+    flex: 1; border: 1px solid var(--border); background: var(--bg3);
+    color: var(--text2); border-radius: 8px; padding: 8px; font-size: 12px; font-weight: 600;
+  }
+  .res-actions button.inspect {
+    background: #2d1a00; color: var(--prem); border-color: #7a3a00;
+  }
+
+  .empty {
+    text-align: center; color: var(--text3); padding: 40px 20px; font-size: 14px;
+  }
+
+  /* bottom nav */
+  .bottom-nav {
+    position: fixed; left: 0; right: 0; bottom: 0;
+    display: flex; background: var(--bg2);
+    border-top: 1px solid var(--border);
+    padding: 8px 8px calc(8px + var(--safe));
+    z-index: 50;
+  }
+  .nav-btn {
+    flex: 1; background: none; border: none; color: var(--text3);
+    font-size: 11px; padding: 8px 4px; font-weight: 600;
+  }
+  .nav-btn.active { color: var(--accent); }
+  .nav-btn span { display: block; font-size: 18px; margin-bottom: 2px; }
+
+  /* modal */
+  .modal-bg {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,.7); z-index: 100;
+    align-items: flex-end; justify-content: center;
+  }
+  .modal-bg.open { display: flex; }
+  .modal {
+    width: 100%; max-width: 520px; max-height: 80vh;
+    background: var(--bg2); border-radius: 16px 16px 0 0;
+    padding: 16px; overflow-y: auto;
+    padding-bottom: calc(16px + var(--safe));
+  }
+  .modal h3 { font-size: 15px; margin-bottom: 8px; word-break: break-all; }
+  .modal pre {
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 10px; padding: 12px; font-size: 11px;
+    overflow-x: auto; white-space: pre-wrap; word-break: break-all;
+    color: var(--text2); margin: 10px 0;
+  }
+  .toast {
+    position: fixed; left: 50%; bottom: calc(70px + var(--safe));
+    transform: translateX(-50%);
+    background: var(--accent); color: #fff;
+    padding: 10px 18px; border-radius: 10px;
+    font-size: 13px; font-weight: 600; z-index: 200;
+    opacity: 0; pointer-events: none; transition: opacity .2s;
+  }
+  .toast.show { opacity: 1; }
+
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- LOGIN -->
+  <div id="login-screen">
+    <div class="logo-wrap" id="logo-wrap">
+      <img id="logo-img" alt="logo" style="display:none">
+      <div class="logo-fallback" id="logo-fb">⬡</div>
+    </div>
+    <div class="brand">
+      <h1>TriggerFinder</h1>
+      <div class="pro">PRO</div>
+      <div class="sub">FiveM Advanced Scanner · Mobile</div>
+    </div>
+    <div class="card">
+      <h2>Sign in to continue</h2>
+      <div class="status" id="login-status"></div>
+      <label>Username</label>
+      <input type="text" id="username" autocomplete="username" placeholder="Enter username">
+      <label>Password</label>
+      <input type="password" id="password" autocomplete="current-password" placeholder="Enter password">
+      <div class="row-check">
+        <input type="checkbox" id="show-pw"> <label for="show-pw" style="margin:0">Show password</label>
+      </div>
+      <label>License Key</label>
+      <input type="text" id="license" placeholder="XXXXXX-XXXXXX-XXXXXX-XXXXXX" autocomplete="off">
+      <button class="btn btn-primary" id="login-btn" onclick="doLogin()">Sign In</button>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div id="main-screen">
+    <div class="topbar">
+      <div class="topbar-brand">
+        <img id="top-logo" style="display:none" alt="">
+        <span>Trigger<span class="finder">Finder</span> <small style="color:var(--text3);font-weight:500">PRO</small></span>
+      </div>
+      <div class="topbar-user" id="user-badge">user</div>
+    </div>
+
+    <div class="stats" id="stats-bar">
+      <div class="stat"><b id="s-total">0</b><span>total</span></div>
+      <div class="stat"><b id="s-prem" style="color:var(--prem)">0</b><span>premium</span></div>
+      <div class="stat"><b id="s-item" style="color:var(--purple)">0</b><span>items</span></div>
+      <div class="stat"><b id="s-money" style="color:var(--green)">0</b><span>money</span></div>
+    </div>
+
+    <div class="tabs" id="filter-tabs">
+      <button class="tab active" data-f="all" onclick="setFilter('all',this)">All</button>
+      <button class="tab" data-f="premium" onclick="setFilter('premium',this)">Premium</button>
+      <button class="tab" data-f="item" onclick="setFilter('item',this)">Items</button>
+      <button class="tab" data-f="money" onclick="setFilter('money',this)">Money</button>
+    </div>
+
+    <div class="content" id="content">
+      <!-- views injected -->
+    </div>
+
+    <div class="bottom-nav">
+      <button class="nav-btn active" id="nav-scan" onclick="showView('scan')"><span>📂</span>Scan</button>
+      <button class="nav-btn" id="nav-results" onclick="showView('results')"><span>⚡</span>Results</button>
+      <button class="nav-btn" id="nav-clear" onclick="clearAll()"><span>✕</span>Clear</button>
+      <button class="nav-btn" id="nav-out" onclick="logout()"><span>⏻</span>Logout</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="modal-bg" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <h3 id="modal-title">Trigger</h3>
+    <div class="res-meta" id="modal-meta"></div>
+    <pre id="modal-payload"></pre>
+    <button class="btn btn-primary" onclick="copyModal()">Copy payload</button>
+    <button class="btn btn-ghost" onclick="closeModal()">Close</button>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ── CONFIG ── */
+/* Auth is server-side only — never fetch users/keys in the browser */
+const LOGIN_API = "/api/login";  // same origin on Pages; or full URL to your Function
+
+/* ── SCANNER ENGINE (ported from Python) ── */
+const ITEM_KEYWORDS = [
+  'giveitem','additem','give_item','add_item','receiveitem','receive_item',
+  'craftitem','craft_item','craftingreward','crafting_reward','stopnetting',
+  'receiveitems','receive_items','addinv','addtoinventory','additemtoplayer',
+  'givereward','addreward','grantitem','grant_item','spawnitem','spawn_item',
+  'deliveritem','deliver_item','pickedupitem','giveinvitem','addinvitem',
+  'server:additem','server:giveitem','server:addinv','server:addreward',
+  'server:craftreward','server:deliveritem','server:receiveitem',
+  'givecollection','addcollection','rewarditem','itemreward','item_reward',
+  'purchaseitem','buyitem','sellitem','lootitem','loot_item'
+];
+const MONEY_KEYWORDS = [
+  'addmoney','givemoney','add_money','give_money','addcash','add_cash',
+  'givecash','give_cash','addbalance','add_balance','depositmoney',
+  'deposit_money','transfermoney','transfer_money','addsalary','add_salary',
+  'addwallet','add_wallet','addbank','add_bank','payplayer','pay_player',
+  'rewardmoney','reward_money','addfunds','add_funds','earnmoney','earn_money',
+  'creditplayer','credit_player','addblackmoney','add_blackmoney',
+  'societydeposit','society_deposit','addaccountmoney','giveaccountmoney',
+  'server:addmoney','server:givemoney','server:addcash','server:depositmoney',
+  'server:transfermoney','server:addsalary','server:addbalance',
+  'server:addfunds','server:addblackmoney','payout','payreward'
+];
+const BLACKLIST = [
+  'openinventory','open_inventory','closeinventory','close_inventory',
+  'openshop','open_shop','closeshop','buytrigger','buy_trigger',
+  'selltrigger','sell_trigger','showinventory','show_inventory',
+  'refreshinventory','refresh_inventory','syncinventory','sync_inventory',
+  'getitem','get_item','removeitem','remove_item','useitem','use_item',
+  'dropitem','drop_item','throwitem','throw_item','deleteitem','delete_item',
+  'checkitem','check_item','hasitem','has_item','countitem','count_item',
+  'getbalance','get_balance','checkbalance','check_balance','getmoney',
+  'get_money','spendmoney','spend_money','withdrawmoney','withdraw_money',
+  'removemoney','remove_money','takemoney','take_money','deductmoney',
+  'registeritem','register_item','createitem','create_item','setitem',
+  'updateitem','update_item','itemexists','item_exists',
+  'onplayerloaded','playerloaded','player_loaded','onplayerjoined',
+  'setjob','set_job','setrank','set_rank','toggleduty','toggle_duty',
+  'reviveplayer','healplayer','setdeathstatus','teleportplayer',
+  'admingiveitem','admingivemoney'
+];
+const KNOWN_PREMIUM = new Set([
+  'esx:giveitem','esx:addmoney','qbcore:server:addmoney','qbcore:server:additem',
+  'wasabi_ambulance:giveitem','ak47_smokingv2:craftingreward','devkit_smoking:server:additem',
+  'devkit_bundles:addinv','0r-fishingv2:server:stopnetting','vhs-recycle:sellitem',
+  'mt-restaurants:server:additem','tk_drugs:purchasecart','wasabi_ambulance:gitem',
+  'esx_society:depositmoney','esx_society:withdrawmoney','esx:setjob',
+  'lb-phone:jobupdated','qb-houses:server:depositblackmoney',
+  'at_tableserver:server:giveitem','tableserver:giveitem','tableserver:givemoney'
+].map(s => s.replace(/[_\-\s]/g,'').toLowerCase()));
+
+const TRIGGER_RE = /(?:TriggerServerEvent|TriggerEvent|emitNet)\s*\(\s*["']([^"']{3,120})["']/gi;
+const SERVER_HANDLER_RE = /(?:RegisterNetEvent|AddEventHandler|RegisterServerEvent|lib\.callback\.register|ESX\.RegisterServerCallback|QBCore\.Functions\.CreateCallback)\s*\(\s*["']([^"']{3,120})["']/gi;
+
+function normalize(s){ return s.toLowerCase().replace(/[_\-\s]/g,''); }
+function detectFramework(text, resource=""){
+  const blob = (resource + "\n" + text).toLowerCase();
+  const out = [];
+  if (/\besx\b|es_extended|xplayer/.test(blob)) out.push("ESX");
+  if (/\bqbcore\b|qb-core|player\.functions\./.test(blob)) out.push("QBCore");
+  if (/\bqbox\b|qbx_core/.test(blob)) out.push("QBox");
+  if (/ox_inventory/.test(blob)) out.push("ox_inventory");
+  return out;
+}
+function ctx(content, pos, r=700){
+  return content.slice(Math.max(0,pos-r), Math.min(content.length, pos+r));
+}
+function classifyTrigger(name, context, fullText="", matchStart=0, frameworkHint=null){
+  const nl = normalize(name);
+  if (BLACKLIST.some(b => nl.includes(normalize(b)))) return null;
+  const blob = name + "\n" + context + "\n" + ctx(fullText, matchStart);
+  const lower = blob.toLowerCase();
+  const frameworks = frameworkHint || detectFramework(blob);
+  let score = 0, reasons = [], types = [];
+  if (KNOWN_PREMIUM.has(nl)){ score += 35; reasons.push("known event"); }
+  const itemName = ITEM_KEYWORDS.some(kw => nl.includes(normalize(kw)));
+  const moneyName = MONEY_KEYWORDS.some(kw => nl.includes(normalize(kw)));
+  if (itemName){ types.push("item"); score += 35; reasons.push("item event name"); }
+  if (moneyName){ types.push("money"); score += 35; reasons.push("money event name"); }
+  // framework APIs
+  const fwApis = {
+    ESX: { item: [/\b(?:xPlayer|player|targetPlayer)\s*:\s*addInventoryItem\s*\(/i], money: [/\b(?:xPlayer|player|targetPlayer)\s*:\s*addMoney\s*\(/i] },
+    QBCore: { item: [/\b(?:Player|Target|targetPlayer)\.Functions\.AddItem\s*\(/i], money: [/\b(?:Player|Target|targetPlayer)\.Functions\.AddMoney\s*\(/i] },
+    ox_inventory: { item: [/\bexports\.ox_inventory\s*:\s*AddItem\s*\(/i], money: [] }
+  };
+  for (const fw of frameworks){
+    for (const typ of ["item","money"]){
+      const pats = (fwApis[fw] && fwApis[fw][typ]) || [];
+      if (pats.some(p => p.test(blob))){ types.push(typ); score += 40; reasons.push(fw+" "+typ+" API"); }
+    }
+  }
+  if (/\b(?:add|give|grant|reward|spawn|deliver|receive|loot)\s*(?:item|inventory|inv)\b/i.test(lower)){ types.push("item"); score += 20; reasons.push("custom item"); }
+  if (/\b(?:add|give|grant|reward|pay|credit|deposit)\s*(?:money|cash|funds|balance|salary)\b/i.test(lower)){ types.push("money"); score += 20; reasons.push("custom money"); }
+  if (/\b(?:item|itemName|item_name|itemId|rewardItem)\b/i.test(lower)) score += 10;
+  if (/\b(?:amount|money|cash|price|value|reward|payout|salary|balance)\b/i.test(lower)) score += 10;
+  if (!types.length) return null;
+  let typ = (types.includes("item") && !types.includes("money")) ? "item" : "money";
+  if (types.includes("item") && types.includes("money")) typ = moneyName ? "money" : "item";
+  score = Math.min(100, score);
+  const conf = score >= 75 ? "HIGH" : (score >= 45 ? "MEDIUM" : "LOW");
+  let prem = KNOWN_PREMIUM.has(nl);
+  if (!prem){
+    const rp = name.split(':')[0].toLowerCase();
+    prem = ['wasabi','esx_society','qb-banking','ox_inventory','ps-inventory','qs-inventory','ak47_','0r-fishing','jobs_creator','devkit','vhs-','mt-restaurant','anox-','tk_drugs','ars_ambulance','orbit-'].some(p => rp.includes(p));
+  }
+  return { type: typ, premium: prem, score, confidence: conf,
+    framework: [...new Set(frameworks)].join(", ") || "Standalone/Custom",
+    reason: [...new Set(reasons)].slice(0,4).join("; ") };
+}
+
+function scanContent(text, resource){
+  const results = {};
+  const frameworks = detectFramework(text, resource);
+  const handlers = {};
+  let m;
+  const hre = new RegExp(SERVER_HANDLER_RE.source, "gi");
+  while ((m = hre.exec(text))) handlers[m[1].trim().toLowerCase()] = m.index;
+  const tre = new RegExp(TRIGGER_RE.source, "gi");
+  while ((m = tre.exec(text))){
+    const name = m[1].trim();
+    const key = name.toLowerCase();
+    if (results[key]) continue;
+    const before = text.lastIndexOf("\n", m.index);
+    const ls = before > 0 ? text.lastIndexOf("\n", before - 1) : 0;
+    let a1 = text.indexOf("\n", m.index + m[0].length);
+    let a2 = a1 >= 0 ? text.indexOf("\n", a1 + 1) : -1;
+    const context = text.slice(Math.max(0, ls), a2 >= 0 ? a2 : text.length).trim();
+    let cls = classifyTrigger(name, context, text, m.index, frameworks);
+    if (!cls) continue;
+    const hp = handlers[key];
+    if (hp != null){
+      const hc = classifyTrigger(name, ctx(text, hp, 1200), text, hp, frameworks);
+      if (hc){ cls.score = Math.min(100, cls.score + 20); cls.confidence = cls.score >= 75 ? "HIGH" : cls.confidence; }
+    }
+    results[key] = {
+      name, resource, type: cls.type, premium: cls.premium,
+      ctx: ctx(text, m.index, 900),
+      line: text.slice(0, m.index).split("\n").length,
+      score: cls.score, confidence: cls.confidence,
+      framework: cls.framework, reason: cls.reason
+    };
+  }
+  return Object.values(results);
+}
+
+function buildPayload(name, context){
+  const lines = (context || "").split("\n");
+  let ti = lines.findIndex(l => /TriggerServerEvent|TriggerEvent|emitNet/i.test(l));
+  const pre = ti > 0 ? lines.slice(Math.max(0, ti-3), ti).map(l => l.trim()).filter(l => l && !l.startsWith("--")) : [];
+  const tl = ti >= 0 ? lines[ti].trim() : `TriggerServerEvent("${name}")`;
+  const out = pre.join("\n");
+  return out ? out + "\n" + tl : tl;
+}
+
+/* ── APP STATE ── */
+let currentUser = null;
+let allResults = [];
+let activeFilter = "all";
+let currentView = "scan";
+let modalPayload = "";
+
+/* ── AUTH ── */
+async function doLogin(){
+  const u = document.getElementById("username").value.trim();
+  const p = document.getElementById("password").value;
+  const k = document.getElementById("license").value.trim();
+  const st = document.getElementById("login-status");
+  const btn = document.getElementById("login-btn");
+  if (!u || !p){ st.textContent = "Enter username and password"; st.className = "status err"; return; }
+  if (!k){ st.textContent = "Enter a license key"; st.className = "status err"; return; }
+  btn.disabled = true; btn.textContent = "Verifying…"; st.textContent = ""; st.className = "status";
+
+  try {
+    const res = await fetch(LOGIN_API, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username: u, password: p, key: k })
+    });
+    let data = null;
+    try { data = await res.json(); } catch { data = null; }
+
+    if (!res.ok || !data || !data.ok) {
+      st.textContent = (data && data.error) ? data.error : "Login failed (" + res.status + ")";
+      st.className = "status err";
+      btn.disabled = false; btn.textContent = "Sign In";
+      return;
+    }
+
+    currentUser = data.user || { username: u, role: "user" };
+    if (data.token) {
+      try { sessionStorage.setItem("tf_token", data.token); } catch (e) {}
+    }
+    document.getElementById("login-screen").style.display = "none";
+    document.getElementById("main-screen").style.display = "flex";
+    document.getElementById("user-badge").textContent =
+      currentUser.username + (currentUser.role === "admin" ? " ★" : "");
+    showView("scan");
+  } catch (e) {
+    st.textContent = "Cannot reach login server";
+    st.className = "status err";
+  }
+  btn.disabled = false; btn.textContent = "Sign In";
+}
+function logout(){
+  currentUser = null; allResults = [];
+  try { sessionStorage.removeItem("tf_token"); } catch (e) {}
+  document.getElementById("main-screen").style.display = "none";
+  document.getElementById("login-screen").style.display = "flex";
+  document.getElementById("password").value = "";
+  document.getElementById("license").value = "";
+}
+
+document.getElementById("show-pw").addEventListener("change", e => {
+  document.getElementById("password").type = e.target.checked ? "text" : "password";
+});
+
+/* ── VIEWS ── */
+function showView(name){
+  currentView = name;
+  document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
+  if (name === "scan") document.getElementById("nav-scan").classList.add("active");
+  if (name === "results") document.getElementById("nav-results").classList.add("active");
+  const c = document.getElementById("content");
+  if (name === "scan"){
+    c.innerHTML = `
+      <div class="panel">
+        <h3>Paste FiveM code</h3>
+        <textarea id="paste-box" placeholder="-- Paste .lua / .js code here&#10;TriggerServerEvent('esx:giveItem', 'water', 5)"></textarea>
+        <button class="btn btn-primary" onclick="scanPaste()">Scan Pasted Code</button>
+      </div>
+      <div class="panel">
+        <h3>Or upload files</h3>
+        <label class="file-btn">📄 Tap to choose .lua .js .txt .json .cfg
+          <input type="file" multiple accept=".lua,.js,.txt,.json,.cfg,text/*" onchange="scanFiles(this.files)">
+        </label>
+        <div class="res-meta">On mobile, paste is usually easier than multi-file upload.</div>
+      </div>`;
+  } else {
+    renderResults();
+  }
+}
+
+function setFilter(f, el){
+  activeFilter = f;
+  document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+  el.classList.add("active");
+  if (currentView === "results") renderResults();
+}
+
+function updateStats(){
+  const prem = allResults.filter(t => t.premium).length;
+  const items = allResults.filter(t => t.type === "item").length;
+  const money = allResults.filter(t => t.type === "money").length;
+  document.getElementById("s-total").textContent = allResults.length;
+  document.getElementById("s-prem").textContent = prem;
+  document.getElementById("s-item").textContent = items;
+  document.getElementById("s-money").textContent = money;
+}
+
+function renderResults(){
+  const c = document.getElementById("content");
+  let list = allResults.filter(t => {
+    if (activeFilter === "premium") return t.premium;
+    if (activeFilter === "item" || activeFilter === "money") return t.type === activeFilter;
+    return true;
+  });
+  list.sort((a,b) => b.score - a.score || a.name.localeCompare(b.name));
+  updateStats();
+  if (!list.length){
+    c.innerHTML = `<div class="empty">${allResults.length ? "No triggers match this filter" : "No results yet — scan some code"}</div>`;
+    return;
+  }
+  let html = `<input class="search" type="search" id="q" placeholder="🔍 Search triggers…" oninput="filterSearch(this.value)">`;
+  html += `<div id="result-list">`;
+  // keep ordered list for button handlers
+  window._viewList = list;
+  for (let i = 0; i < list.length; i++){
+    const t = list[i];
+    const conf = (t.confidence || "MEDIUM").toLowerCase();
+    html += `<div class="result ${t.premium ? "premium" : ""}" data-name="${esc(t.name.toLowerCase())}" data-res="${esc((t.resource||"").toLowerCase())}">
+      <div class="result-top">
+        <span class="badge ${conf}">★ ${t.confidence}</span>
+        <span class="badge ${t.type}">${t.type.toUpperCase()}</span>
+        <span class="res-meta">L${t.line} · ${esc(t.resource)}</span>
+      </div>
+      <div class="res-name ${t.premium ? "premium" : ""}">${esc(t.name)}${t.framework && t.framework !== "Standalone/Custom" ? " · " + esc(t.framework) : ""}</div>
+      <div class="res-actions">
+        <button type="button" data-i="${i}" class="btn-copy">Copy</button>
+        <button type="button" data-i="${i}" class="inspect btn-inspect">Inspect</button>
+      </div>
+    </div>`;
+  }
+  html += `</div>`;
+  c.innerHTML = html;
+  c.querySelectorAll(".btn-copy").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const t = window._viewList[+btn.dataset.i];
+      if (t) copyText(t.name);
+    });
+  });
+  c.querySelectorAll(".btn-inspect").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const t = window._viewList[+btn.dataset.i];
+      if (t) openInspect(t);
+    });
+  });
+}
+
+function filterSearch(q){
+  q = (q || "").toLowerCase();
+  document.querySelectorAll("#result-list .result").forEach(el => {
+    const hit = !q || el.dataset.name.includes(q) || el.dataset.res.includes(q);
+    el.style.display = hit ? "" : "none";
+  });
+}
+
+function esc(s){
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function scanPaste(){
+  const text = document.getElementById("paste-box").value.trim();
+  if (!text){ toast("Paste some code first"); return; }
+  const found = scanContent(text, "pasted");
+  mergeResults(found);
+  toast(`Found ${found.length} trigger${found.length!==1?"s":""}`);
+  showView("results");
+  document.getElementById("nav-results").classList.add("active");
+  document.getElementById("nav-scan").classList.remove("active");
+}
+
+async function scanFiles(fileList){
+  if (!fileList || !fileList.length) return;
+  let total = 0;
+  for (const f of fileList){
+    try {
+      const text = await f.text();
+      const resource = f.name.replace(/\.[^.]+$/, "");
+      const found = scanContent(text, resource);
+      mergeResults(found);
+      total += found.length;
+    } catch (e) {
+      toast("Could not read " + f.name);
+    }
+  }
+  toast(`Found ${total} trigger${total!==1?"s":""}`);
+  showView("results");
+  document.getElementById("nav-results").classList.add("active");
+  document.getElementById("nav-scan").classList.remove("active");
+}
+
+function mergeResults(found){
+  for (const t of found){
+    if (!allResults.some(x => x.name.toLowerCase() === t.name.toLowerCase() && x.resource.toLowerCase() === t.resource.toLowerCase())){
+      allResults.push(t);
+    }
+  }
+  updateStats();
+}
+
+function clearAll(){
+  allResults = [];
+  updateStats();
+  showView("scan");
+  toast("Results cleared");
+}
+
+function copyText(s){
+  s = String(s == null ? "" : s);
+  function fallback(){
+    const ta = document.createElement("textarea");
+    ta.value = s;
+    ta.setAttribute("readonly", "");
+    ta.style.cssText = "position:fixed;left:-9999px;top:0;opacity:0;";
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    ta.setSelectionRange(0, ta.value.length);
+    let ok = false;
+    try { ok = document.execCommand("copy"); } catch (e) {}
+    document.body.removeChild(ta);
+    toast(ok ? "Copied!" : "Long-press the text to copy");
+    return ok;
+  }
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(s).then(() => toast("Copied!")).catch(() => fallback());
+  } else {
+    fallback();
+  }
+}
+
+function openInspect(t){
+  modalPayload = buildPayload(t.name, t.ctx);
+  document.getElementById("modal-title").textContent = t.name;
+  document.getElementById("modal-meta").textContent =
+    `${t.confidence} · ${t.type} · ${t.resource} · L${t.line}` + (t.reason ? " · " + t.reason : "");
+  document.getElementById("modal-payload").textContent = modalPayload;
+  document.getElementById("modal-bg").classList.add("open");
+}
+function closeModal(){ document.getElementById("modal-bg").classList.remove("open"); }
+function copyModal(){ copyText(modalPayload); }
+
+function toast(msg){
+  const t = document.getElementById("toast");
+  t.textContent = msg; t.classList.add("show");
+  setTimeout(() => t.classList.remove("show"), 2000);
+}
+
+/* Basic view-source deterrents (NOT real security — client JS is always readable) */
+document.addEventListener("contextmenu", e => e.preventDefault());
+document.addEventListener("keydown", e => {
+  const k = e.key.toLowerCase();
+  if (e.key === "F12") e.preventDefault();
+  if (e.ctrlKey && e.shiftKey && (k === "i" || k === "j" || k === "c")) e.preventDefault();
+  if (e.ctrlKey && k === "u") e.preventDefault();
+  if (e.metaKey && e.altKey && (k === "i" || k === "j" || k === "c")) e.preventDefault();
+});
+
+
+/* try load logo.png from same folder */
+(function(){
+  const img = document.getElementById("logo-img");
+  const fb = document.getElementById("logo-fb");
+  const top = document.getElementById("top-logo");
+  img.onload = () => { img.style.display = "block"; fb.style.display = "none"; top.src = img.src; top.style.display = "block"; };
+  img.onerror = () => {};
+  img.src = "logo.png";
+})();
+</script>
+</body>
+</html>
