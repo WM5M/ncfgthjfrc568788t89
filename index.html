@@ -18,7 +18,7 @@
     --text: #e8eaf0;
     --text2: #8b8fa8;
     --text3: #4a4e62;
-    --accent: #3b82f6;
+    --accent: #d42e18;
     --accent2: #1d4ed8;
     --green: #22c55e;
     --amber: #f59e0b;
@@ -359,7 +359,7 @@
 <script>
 /* ── CONFIG ── */
 /* Auth is server-side only — never fetch users/keys in the browser */
-const LOGIN_API = "/api/login";  // same origin on Pages; or full URL to your Function
+const LOGIN_API = "https://jaymods-menu.pages.dev/api/login";
 
 /* ── SCANNER ENGINE (ported from Python) ── */
 const ITEM_KEYWORDS = [
@@ -410,7 +410,7 @@ const KNOWN_PREMIUM = new Set([
   'mt-restaurants:server:additem','tk_drugs:purchasecart','wasabi_ambulance:gitem',
   'esx_society:depositmoney','esx_society:withdrawmoney','esx:setjob',
   'lb-phone:jobupdated','qb-houses:server:depositblackmoney',
-  'at_tableserver:server:giveitem','tableserver:giveitem','tableserver:givemoney'
+  'at_tableserver:server:giveitem','tableserver:giveitem','tableserver:givemoney', '__WaveShield:CreateEntity'
 ].map(s => s.replace(/[_\-\s]/g,'').toLowerCase()));
 
 const TRIGGER_RE = /(?:TriggerServerEvent|TriggerEvent|emitNet)\s*\(\s*["']([^"']{3,120})["']/gi;
